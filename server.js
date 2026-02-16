@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import connectDB from './config/db.js';
 import authRouter from './routes/authRoutes.js';
 import userRouter from './routes/userRoutes.js';
+import youtubeRouter from './routes/youtubeRoutes.js';
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.get('/', (req, res)=>{
 
 app.use('/api/auth', authRouter)
 app.use('/api/user', userRouter);
+app.use('/api/youtube', youtubeRouter);
 
 app.listen(port, ()=>{
     console.log("Server is running on port : ", port);

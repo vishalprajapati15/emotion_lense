@@ -23,18 +23,18 @@ export const extractVideoId = (youtubeUrl) => {
     throw new Error('Invalid YouTube URL format');
 };
 
-export const getYoutubeComments = async (videoId)=>{
+export const getYoutubeComments = async (videoId) => {
     const url = getCommentUrl(videoId);
     const response = await fetch(url);
 
     const data = await response.json();
 
-    if(!data.items){
+    if (!data.items) {
         throw new Error('No comments found!!');
     }
 
     return data.items
-        .map((item)=>{
+        .map((item) => {
             const commentText = item.snippet.topLevelComment.snippet.textDisplay;
             return cleanCommentText(commentText);
         })

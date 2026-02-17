@@ -30,7 +30,7 @@ export const register = async (req, res) => {
             email,
             password: hashedPassword
         });
-        user.save();
+        await user.save();
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '7d' });
 
@@ -45,8 +45,8 @@ export const register = async (req, res) => {
             to: email,
             subject: "Welcome to Emotion Lense",
             // text: `Welcome to MERN_AUTH. Your Profile has been created with email id : ${email}`,
-            html: WELCOME_TEMPLATE.
-            replace('{{username}}', user.name)
+            html: WELCOME_TEMPLATE
+            .replace('{{username}}', user.name)
             // .replace("{{loginLink}}", "https://emotionlense.com/dashboard")
         });
 

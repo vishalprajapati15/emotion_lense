@@ -1,12 +1,12 @@
-const huggingFaceApiKey = process.env.HUGGING_FACE_TOKEN;
-console.log('huggingFaceApiKey : ', huggingFaceApiKey);
+import { InferenceClient } from "@huggingface/inference";
 
-export const hfHeaders = {
-    Authorization: `Bearer ${huggingFaceApiKey}`,
-    "Content-Type": "application/json"
-};
+const hf = new InferenceClient(process.env.HUGGING_FACE_TOKEN);
 
-export const hfModels = {
-    sentiment : "https://api-inference.huggingface.co/models/distilbert-base-uncased-finetuned-sst-2-english",
-    emotion:  "https://api-inference.huggingface.co/models/j-hartmann/emotion-english-distilroberta-base"
+// console.log("Hugging Face Hf : ",hf);
+
+export default hf;
+
+export const models = {
+    sentiment: "distilbert-base-uncased-finetuned-sst-2-english",
+    emotion: "j-hartmann/emotion-english-distilroberta-base"
 };

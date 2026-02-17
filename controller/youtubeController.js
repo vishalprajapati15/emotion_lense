@@ -4,6 +4,7 @@ import { analyzeSentiment, analyzeEmotion } from '../services/huggingfaceService
 export const getComments = async (req, res) => {
     try {
         const { youtubeUrl } = req.body;
+        console.log("Youtube : ", youtubeUrl)
 
         if (!youtubeUrl) {
             return res.json({
@@ -14,10 +15,12 @@ export const getComments = async (req, res) => {
 
         // Extract video ID from the URL
         const videoId = extractVideoId(youtubeUrl);
+        console.log("videoId : ", videoId)
 
         // Fetch comments using the video ID
         const comments = await getYoutubeComments(videoId);
-
+        console.log("comments : ", comments)
+        
         return res.json({
             success: true,
             videoId,
@@ -36,6 +39,7 @@ export const getComments = async (req, res) => {
 export const analyzeComments = async (req, res)=>{
     try {
         const {youtubeUrl} = req.body;
+
         if(!youtubeUrl){
             return res.json({
                 success: false,
@@ -47,7 +51,9 @@ export const analyzeComments = async (req, res)=>{
 
         const comments = await getYoutubeComments(videoId);
         const sentiments = await analyzeSentiment(comments);
+        console.log("sentiments : ", sentiments)
         const emotions = await analyzeEmotion(comments);
+        console.log("emotions : ", emotions)
 
         return res.json({
             success: true,

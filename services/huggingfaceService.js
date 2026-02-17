@@ -1,21 +1,28 @@
-import { hfHeaders, hfModels } from "../config/huggingface.js";
-import axios from "axios";
+import hf, { models } from "../config/huggingface.js";
 
 export const analyzeSentiment = async (texts)=>{
-    const response = await axios.post(
-        hfModels.sentiment,
-        {inputs: texts},
-        {headers: hfHeaders}
-    );
-    return response.data;
+    try {
+        const results = await hf.textClassification({
+            model: models.sentiment,
+            inputs: texts
+        });
+        return results;
+    } catch (error) {
+        const detail = error?.message || error.toString();
+        throw new Error(`Hugging Face Sentiment Error: ${detail}`);
+    }
 };
 
 
 export const analyzeEmotion = async (texts)=>{
-    const response = await axios.post(
-        hfModels.emotion,
-        {inputs: texts},
-        {headers: hfHeaders}
-    );
-    return response.data;
+    try {
+        const results = await hf.textClassification({
+            model: models.emotion,
+            inputs: texts
+        });
+        return results;
+    } catch (error) {
+        const detail = error?.message || error.toString();
+        throw new Error(`Hugging Face Emotion Error: ${detail}`);
+    }
 }

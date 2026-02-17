@@ -50,7 +50,7 @@ export const analyzeComments = async (req, res) => {
         const videoId = extractVideoId(youtubeUrl);
 
         const comments = await getYoutubeComments(videoId);
-        
+
         if (!comments || comments.length === 0) {
             return res.json({
                 success: false,
@@ -104,18 +104,40 @@ export const analyzeComments = async (req, res) => {
                     percentage: ((data[key] / total) * 100).toFixed(2)
                 };
             }
-            return formatted
+            return formatted;
+        }
+
+        const getDominantStat = (data) => {
+            let dominantKey = null;
+            let dominantValue = 0;
+            for (let key in data) {
+                if (data[key].count > dominantValue) {
+                    dominantValue = data[key].count;
+                    dominantKey = key;
+                }
+            };
+            return {
+                label: dominantKey,
+                count: dominantValue
+            };
         }
 
         stats.emotion = statsPercentage(stats.emotion, stats.totalComments);
         stats.sentiment = statsPercentage(stats.sentiment, stats.totalComments);
         console.log("Stats : ", stats);
 
+        const dominantEmotion = getDominantStat(stats.emotion);
+        console.log("Dominant Emotion : ", dominantEmotion);
+        const dominantSentiment = getDominantStat(stats.sentiment);
+        console.log("Dominant Sentiment : ", dominantSentiment);
+
         return res.json({
             success: true,
             videoId,
             totalComments: comments.length,
             statistics: stats,
+            dominantEmotion,
+            dominantSentiment,
             message: "Comments analyzed successfully!!"
         });
 

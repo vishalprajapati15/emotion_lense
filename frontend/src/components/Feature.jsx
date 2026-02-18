@@ -2,10 +2,16 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { MessageSquare, Brain, Smile, PieChart, Zap, Shield, Sparkles } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
 
 const Feature = () => {
 
     const navigate = useNavigate();
+    const { isAuthenticated } = useAuth()
+
+    const handleGetStarted = () => {
+        navigate(isAuthenticated ? '/analysis' : '/login')
+    }
 
     const features = [
         {
@@ -148,7 +154,7 @@ const Feature = () => {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         className="px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-full shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 transition-all cursor-pointer duration-300"
-                        onClick={()=>navigate('/analysis')}
+                        onClick={handleGetStarted}
                     >
                         Get Started Now
                     </motion.button>

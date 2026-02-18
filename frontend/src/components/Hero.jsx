@@ -4,26 +4,40 @@ import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Toolti
 import { Sparkles, TrendingUp, Heart } from 'lucide-react'
 
 const Hero = () => {
+ 
+    const total = 100;
+    const r1 = Math.floor(Math.random() * (total - 2)) + 1;
+    const r2 = Math.floor(Math.random() * (total - r1 - 1)) + 1;
+    const r3 = total - r1 - r2;
+    
     const sentimentData = [
-        { name: "Positive", value: 58 },
-        { name: "Neutral", value: 27 },
-        { name: "Negative", value: 15 },
+        { name: "Positive", value: r1 },
+        { name: "Neutral", value: r2 },
+        { name: "Negative", value: r3 },
     ]
 
+    // Generate random emotion values that sum to 100
+    const e1 = Math.floor(Math.random() * (total - 5)) + 1;
+    const e2 = Math.floor(Math.random() * (total - e1 - 4)) + 1;
+    const e3 = Math.floor(Math.random() * (total - e1 - e2 - 3)) + 1;
+    const e4 = Math.floor(Math.random() * (total - e1 - e2 - e3 - 2)) + 1;
+    const e5 = Math.floor(Math.random() * (total - e1 - e2 - e3 - e4 - 1)) + 1;
+    const e6 = total - e1 - e2 - e3 - e4 - e5;
+
     const emotionData = [
-        { name: "Joy", value: 42 },
-        { name: "Anger", value: 18 },
-        { name: "Sadness", value: 15 },
-        { name: "Surprise", value: 12 },
-        { name: "Fear", value: 8 },
-        { name: "Disgust", value: 5 },
+        { name: "Joy", value: e1 },
+        { name: "Anger", value: e2 },
+        { name: "Sadness", value: e3 },
+        { name: "Surprise", value: e4 },
+        { name: "Fear", value: e5 },
+        { name: "Disgust", value: e6 },
     ]
 
 
     const sentimentColors = {
-        Positive: '#22d3ee', // cyan-400
-        Neutral: '#60a5fa', // blue-400
-        Negative: '#f472b6'  // pink-400
+        Positive: '#22d3ee', 
+        Neutral: '#60a5fa', 
+        Negative: '#f472b6'  
     }
 
 

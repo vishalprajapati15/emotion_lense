@@ -1,234 +1,217 @@
-# Emotion Lens - YouTube Comment Analysis Backend
+# 🔍 Emotion Lens
 
-A powerful backend service that analyzes YouTube comments using AI to extract sentiment and emotional insights. Built with Node.js, Express, and integrated with Hugging Face AI models.
+> AI-powered YouTube comment sentiment & emotion analysis platform built with the MERN stack.
 
-## 🚀 Features
+---
 
-- **User Authentication System**
-  - Secure registration and login with JWT tokens
-  - Password encryption using bcrypt
-  - OTP-based password reset
-  - Email notifications via Resend
-  
-- **YouTube Comment Analysis**
-  - Fetch up to 100 comments from any YouTube video
-  - Clean and preprocess comments (remove URLs, emojis, HTML)
-  - AI-powered sentiment analysis (Positive/Negative)
-  - AI-powered emotion detection (Joy, Sadness, Anger, Fear, Surprise, etc.)
-  - Statistical aggregation with percentages
-  - Identify dominant sentiment and emotion
+## 📌 Overview
 
-- **Secure API**
-  - Protected routes with JWT authentication
-  - httpOnly cookies for token storage
-  - CORS enabled for frontend integration
+**Emotion Lens** lets you paste any public YouTube video URL and instantly analyze the audience's emotions and sentiments from the comments section using state-of-the-art HuggingFace AI models.
+
+---
+
+## ✨ Features
+
+- 🎥 **YouTube Video Preview** — Fetch video metadata (title, thumbnail, views, likes, comment count) before analysis
+- 🤖 **AI Sentiment Analysis** — Classifies comments as Positive, Neutral, or Negative using `distilbert-base-uncased-finetuned-sst-2-english`
+- 😊 **Emotion Detection** — Detects 6 emotions (Joy, Anger, Sadness, Surprise, Fear, Disgust) using `j-hartmann/emotion-english-distilroberta-base`
+- 📊 **Visual Analytics** — Interactive bar and pie charts powered by Recharts
+- 🔐 **JWT Authentication** — Secure cookie-based auth (register, login, logout)
+- 📧 **Password Reset via OTP** — Email-based OTP flow using Resend
+- 🔔 **Toast Notifications** — Real-time feedback with react-hot-toast
+
+---
 
 ## 🛠️ Tech Stack
 
-### Backend Framework
-- **Node.js** - JavaScript runtime
-- **Express.js** (v5.2.1) - Web application framework
+### Frontend
+| Tech | Purpose |
+|------|---------|
+| React 19 + Vite | UI framework |
+| Tailwind CSS v4 | Styling |
+| Framer Motion | Animations |
+| Recharts | Data visualization |
+| Lucide React | Icons |
+| Axios | HTTP client |
+| React Router DOM v7 | Routing |
+| React Hot Toast | Notifications |
 
-### Database
-- **MongoDB** - NoSQL database
-- **Mongoose** (v9.2.1) - MongoDB ODM
+### Backend
+| Tech | Purpose |
+|------|---------|
+| Node.js + Express | REST API server |
+| MongoDB + Mongoose | Database |
+| JWT + bcryptjs | Authentication |
+| HuggingFace Inference API | AI models |
+| YouTube Data API v3 | Comment & metadata fetching |
+| Resend (nodemailer) | Email delivery |
+| Cookie Parser | HTTP-only cookie handling |
 
-### Authentication & Security
-- **JWT (jsonwebtoken v9.0.3)** - Token-based authentication
-- **bcryptjs (v3.0.3)** - Password hashing
-- **cookie-parser (v1.4.7)** - Cookie parsing middleware
-- **CORS (v2.8.6)** - Cross-origin resource sharing
-
-### AI & ML Integration
-- **@huggingface/inference** - Hugging Face AI models client
-  - Sentiment Analysis Model: `distilbert-base-uncased-finetuned-sst-2-english`
-  - Emotion Detection Model: `j-hartmann/emotion-english-distilroberta-base`
-
-### External APIs
-- **YouTube Data API v3** - Fetch video comments
-- **Hugging Face Inference API** - AI model inference
-- **Resend API (v6.9.2)** - Email delivery service
-
-### Utilities
-- **axios (v1.13.5)** - HTTP client
-- **dotenv (v17.3.1)** - Environment variable management
-- **nodemon (v3.1.11)** - Development auto-reload
+---
 
 ## 📁 Project Structure
 
 ```
-backend
-├── config/
-│   ├── db.js                  # MongoDB connection
-│   ├── huggingface.js         # Hugging Face client setup
-│   ├── youtube.js             # YouTube API configuration
-│   ├── nodemailer.js          # Email service
-│   └── emailTemplets.js       # HTML email templates
-├── controller/
-│   ├── authController.js      # Authentication logic
-│   ├── userController.js      # User data operations
-│   └── youtubeController.js   # YouTube analysis logic
-├── middleware/
-│   └── userAuth.js            # JWT authentication middleware
-├── model/
-│   └── userModel.js           # User schema
-├── routes/
-│   ├── authRoutes.js          # Auth endpoints
-│   ├── userRoutes.js          # User endpoints
-│   └── youtubeRoutes.js       # YouTube analysis endpoints
-├── services/
-│   ├── huggingfaceService.js  # AI model service
-│   └── youtubeService.js      # YouTube API service
-├── utils/
-│   └── cleanText.js           # Text preprocessing utilities
-├── server.js                  # Application entry point
-└── package.json               # Dependencies
+ML-MERN/
+├── backend/
+│   ├── server.js
+│   ├── config/
+│   │   ├── db.js
+│   │   ├── huggingface.js
+│   │   ├── nodemailer.js
+│   │   ├── youtube.js
+│   │   └── emailTemplets.js
+│   ├── controller/
+│   │   ├── authController.js
+│   │   ├── userController.js
+│   │   └── youtubeController.js
+│   ├── middleware/
+│   │   └── userAuth.js
+│   ├── model/
+│   │   ├── userModel.js
+│   │   └── analysisModel.js
+│   ├── routes/
+│   │   ├── authRoutes.js
+│   │   ├── userRoutes.js
+│   │   └── youtubeRoutes.js
+│   └── services/
+│       ├── huggingfaceService.js
+│       └── youtubeService.js
+│
+└── frontend/
+    └── src/
+        ├── App.jsx
+        ├── main.jsx
+        ├── context/
+        │   └── Context.jsx        # AuthProvider + useAuth
+        ├── hooks/
+        │   └── useAuth.js
+        ├── services/
+        │   ├── apiClient.js
+        │   ├── authService.js
+        │   └── youtubeService.js
+        ├── components/
+        │   ├── Navbar.jsx
+        │   ├── Hero.jsx
+        │   ├── Feature.jsx
+        │   ├── Pricing.jsx
+        │   └── Footer.jsx
+        └── pages/
+            ├── Home.jsx
+            ├── Login.jsx
+            ├── ResetPassword.jsx
+            ├── Analysis.jsx
+            ├── Dashboard.jsx
+            └── ContactUs.jsx
 ```
 
-## 🔧 Installation & Setup
+---
 
-### Prerequisites
-- Node.js (v18 or higher)
-- MongoDB instance
-- YouTube Data API key
-- Hugging Face API token
-- Resend API key
+## ⚙️ Environment Variables
 
-### Environment Variables
-
-Create a `.env` file in the root directory:
-
+### Backend — `backend/.env`
 ```env
-PORT=port
-MONGODB_URI=mongodb_uri
-JWT_SECRET_KEY=your_jwt_secret_key
-HUGGING_FACE_TOKEN=your_huggingface_token
-YOUTUBE_API_KEY=your_youtube_api_key
+PORT=5000
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET_KEY=your_jwt_secret
+YOUTUBE_API_KEY=your_youtube_data_api_key
+HUGGING_FACE_TOKEN=your_huggingface_api_token
 RESEND_API_KEY=your_resend_api_key
 NODE_ENV=development
 ```
 
-### Install Dependencies
+### Frontend — `frontend/.env`
+```env
+VITE_BACKEND_URL=http://localhost:5000
+```
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/your-username/emotion-lens.git
+cd emotion-lens
+```
+
+### 2. Install dependencies
 
 ```bash
+# Backend
+cd backend
+npm install
+
+# Frontend
+cd ../frontend
 npm install
 ```
 
-### Run the Server
+### 3. Configure environment variables
+Create `backend/.env` and `frontend/.env` using the variables listed above.
+
+### 4. Run the development servers
 
 ```bash
+#  Backend
+cd backend
 npm start
+
+#  Frontend
+cd frontend
+npm run dev
 ```
 
+Frontend runs at `http://localhost:5173`  
+Backend runs at `http://localhost:5000`
 
-## 📡 API Endpoints
+---
 
-### Authentication Routes (`/api/auth`)
+## 🔌 API Endpoints
 
-#### Register User
-- **POST** `/api/auth/register`
-- **Body:** `{ "name": "string", "email": "string", "password": "string" }`
-- **Response:** JWT token in httpOnly cookie
+### Auth — `/api/auth`
+| Method | Route | Description | 
+|--------|-------|-------------|
+| POST | `/register` | Register a new user | 
+| POST | `/login` | Login and set cookie | 
+| POST | `/logout` | Clear auth cookie | 
+| GET | `/me` | Get current user info | 
+| POST | `/send-reset-otp` | Send password reset OTP | 
+| POST | `/reset-password` | Reset password with OTP | 
 
-#### Login
-- **POST** `/api/auth/login`
-- **Body:** `{ "email": "string", "password": "string" }`
-- **Response:** JWT token in httpOnly cookie
+### YouTube — `/api/youtube`
+| Method | Route | Description | 
+|--------|-------|-------------|
+| POST | `/video-meta-data` | Fetch video title, thumbnail, stats | 
+| POST | `/analyze` | Analyze comments (sentiment + emotion) | 
+| POST | `/get-comments` | Fetch raw comments | 
 
-#### Logout
-- **POST** `/api/auth/logout`
-- **Response:** Clears authentication cookie
+---
 
-#### Send Reset OTP
-- **POST** `/api/auth/send-reset-otp`
-- **Body:** `{ "email": "string" }`
-- **Response:** OTP sent to email (valid for 15 minutes)
+## 🤖 AI Models
 
-#### Reset Password
-- **POST** `/api/auth/reset-password`
-- **Body:** `{ "email": "string", "otp": "string", "newPassword": "string" }`
-- **Response:** Password updated
+| Task | Model |
+|------|-------|
+| Sentiment Analysis | `distilbert-base-uncased-finetuned-sst-2-english` |
+| Emotion Detection | `j-hartmann/emotion-english-distilroberta-base` |
 
-### User Routes (`/api/user`) 🔒 Protected
+> Comments are capped at **100 per analysis** and truncated to **1800 characters** each to stay within the model's 512-token limit. Processed in batches of 8.
 
-#### Get User Data
-- **GET** `/api/user/data`
-- **Headers:** Cookie with JWT token
-- **Response:** User information
+---
 
-### YouTube Analysis Routes (`/api/youtube`) 🔒 Protected
+## 📸 Pages
 
-#### Get Comments
-- **POST** `/api/youtube/get-comments`
-- **Body:** `{ "youtubeUrl": "string" }`
-- **Response:** Array of cleaned comments
+| Route | Page | 
+|-------|------|
+| `/` | Home (Hero + Features) | 
+| `/login` | Login / Register | 
+| `/reset-password` | OTP Password Reset | 
+| `/analysis` | YouTube Analysis | 
+| `/contact` | Contact Us | 
 
-#### Analyze Comments
-- **POST** `/api/youtube/analyze`
-- **Body:** `{ "youtubeUrl": "string" }`
-- **Response:**
-```json
-{
-  "success": true,
-  "videoId": "video_id",
-  "totalComments": 100,
-  "statistics": {
-    "totalComments": 100,
-    "sentiment": {
-      "POSITIVE": { "count": 60, "percentage": "60.00" },
-      "NEGATIVE": { "count": 40, "percentage": "40.00" }
-    },
-    "emotion": {
-      "joy": { "count": 45, "percentage": "45.00" },
-      "sadness": { "count": 20, "percentage": "20.00" },
-      "anger": { "count": 15, "percentage": "15.00" },
-      "neutral": { "count": 20, "percentage": "20.00" }
-    }
-  },
-  "dominantSentiment": { "label": "POSITIVE", "count": 60 },
-  "dominantEmotion": { "label": "joy", "count": 45 },
-  "message": "Comments analyzed successfully!!"
-}
-```
+---
 
-## 🧠 AI Models Used
-
-### Sentiment Analysis
-- **Model:** `distilbert-base-uncased-finetuned-sst-2-english`
-- **Task:** Binary sentiment classification (Positive/Negative)
-- **Accuracy:** High accuracy on English text
-
-### Emotion Detection
-- **Model:** `j-hartmann/emotion-english-distilroberta-base`
-- **Task:** Multi-class emotion classification
-- **Emotions:** Joy, Sadness, Anger, Fear, Surprise, Disgust, Neutral
-
-## 🔒 Security Features
-
-- Passwords hashed with bcrypt (10 salt rounds)
-- JWT tokens stored in httpOnly cookies (prevent XSS)
-- Cookies secured in production (HTTPS only)
-- SameSite cookie policy
-- Protected routes with authentication middleware
-- OTP expiration after 15 minutes
-
-## 🧹 Text Preprocessing
-
-Comments are cleaned before analysis:
-- Remove HTML tags
-- Remove URLs
-- Remove emojis
-- Keep only English and Hindi text
-- Remove extra whitespace
-- Filter empty comments
-
-## 📊 Comment Analysis Limits
-
-- Default: 100 comments per video (YouTube API limit)
-- Configurable in `config/youtube.js`
-- API quota depends on your YouTube API key
-
-
-## 📝 Author
+## 👤 Author
 
 **Vishal Prajapati**
+

@@ -1,16 +1,18 @@
 import { getCommentUrl } from '../config/youtube.js';
 import { cleanCommentText } from '../utils/cleanText.js';
 
-// Extract video ID from various YouTube URL formats
+
 export const extractVideoId = (youtubeUrl) => {
     if (!youtubeUrl || typeof youtubeUrl !== 'string') {
         throw new Error('Invalid YouTube URL');
     }
 
-    // Match patterns: youtube.com/watch?v=ID, youtu.be/ID, youtube.com/embed/ID
     const patterns = [
-        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
-        /^([a-zA-Z0-9_-]{11})$/ // Direct video ID
+        /(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,
+        /(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+        /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+        /(?:youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
+        /^([a-zA-Z0-9_-]{11})$/
     ];
 
     for (const pattern of patterns) {
@@ -38,5 +40,42 @@ export const getYoutubeComments = async (videoId) => {
             const commentText = item.snippet.topLevelComment.snippet.textDisplay;
             return cleanCommentText(commentText);
         })
-        .filter(comment => comment.length > 0); // Remove empty comments after cleaning
+        .filter(comment => comment.length > 0)
 }
+
+export const getYoutubeVideoDetails = async (videoId) => {
+    if (!videoId) {
+        throw new Error("Video ID is required");
+    }
+
+    const api_key = process.env.YOUTUBE_API_KEY;
+
+    const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${videoId}&key=${api_key}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (!data.items || data.items.length === 0) {
+        throw new Error("Video Not found!!");
+    }
+
+    const video = data.items[0];
+
+    const snippet = video.snippet;
+
+    const stats = video.statistics
+
+    return {
+        videoId,
+        title: snippet.title,
+        channelName: snippet.channelTitle,
+        thumbnail:
+            snippet.thumbnails?.maxres?.url ||
+            snippet.thumbnails?.high?.url ||
+            snippet.thumbnails?.medium?.url ||
+            snippet.thumbnails?.default?.url,
+        views: Number(stats.viewCount) || 0,
+        likes: Number(stats.likeCount) || 0,
+        publishedAt: snippet.publishedAt
+    };
+};

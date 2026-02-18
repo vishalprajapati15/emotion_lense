@@ -2,8 +2,11 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { Sparkles, TrendingUp, Heart } from 'lucide-react'
+import {  useNavigate } from 'react-router-dom'
 
 const Hero = () => {
+
+    const navigate = useNavigate()
  
     const total = 100;
     const r1 = Math.floor(Math.random() * (total - 2)) + 1;
@@ -117,8 +120,9 @@ const Hero = () => {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-full shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 cursor-pointer transition-all duration-300"
+                            onClick={()=>navigate('/analysis')}
                         >
-                            Get Started Free
+                            Get Started 
                         </motion.button>
                     </div>
                 </motion.div>

@@ -1,4 +1,4 @@
-import { extractVideoId, getYoutubeComments } from '../services/youtubeService.js';
+import { extractVideoId, getYoutubeComments, getYoutubeVideoDetails } from '../services/youtubeService.js';
 import { analyzeSentiment, analyzeEmotion } from '../services/huggingfaceService.js';
 
 export const getComments = async (req, res) => {
@@ -13,11 +13,10 @@ export const getComments = async (req, res) => {
             });
         }
 
-        // Extract video ID from the URL
         const videoId = extractVideoId(youtubeUrl);
         console.log("videoId : ", videoId)
 
-        // Fetch comments using the video ID
+        // Fetch comments 
         const comments = await getYoutubeComments(videoId);
         console.log("comments : ", comments)
 
@@ -49,7 +48,10 @@ export const analyzeComments = async (req, res) => {
 
         const videoId = extractVideoId(youtubeUrl);
 
-        const comments = await getYoutubeComments(videoId);
+        const [comments, videoMetaData] = await Promise.all([
+            getYoutubeComments(videoId),
+            getYoutubeVideoDetails(videoId)
+        ]);
 
         if (!comments || comments.length === 0) {
             return res.json({
@@ -138,6 +140,7 @@ export const analyzeComments = async (req, res) => {
             statistics: stats,
             dominantEmotion,
             dominantSentiment,
+            videoMetaData,
             message: "Comments analyzed successfully!!"
         });
 
@@ -145,6 +148,42 @@ export const analyzeComments = async (req, res) => {
         return res.json({
             success: false,
             message: `Comments Analysis Error: ${error.message}`
+        });
+    }
+}
+
+export const getVideoMetaData = async (req, res)=>{
+    try {
+        const { youtubeUrl } = req.body;
+
+        if (!youtubeUrl) {
+            return res.json({
+                success: false,
+                message: "YouTube URL is required!!"
+            });
+        }
+        
+        const videoId = extractVideoId(youtubeUrl);
+
+        const videoMetaData = await getYoutubeVideoDetails(videoId);
+
+        if(!videoMetaData){
+            return res.json({
+                success: false,
+                message: 'No video meta data found!!'
+            });
+        }
+
+        return res.json({
+            success:true,
+            videoMetaData,
+            message: 'Video Meta Data Fetch successfully !!'
+        });
+        
+    } catch (error) {
+        return res.json({
+            success: false,
+            message: `Fetch Video Meta Data Error: ${error.message}`
         });
     }
 }

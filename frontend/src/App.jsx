@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import Login from './pages/Login'
-import Dashboard from './pages/Dashboard'
 import Analysis from './pages/Analysis'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -16,7 +15,6 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/analysis" element={<Analysis />} />
             <Route path="/contact" element={<ContactUs />} />
           </Routes>

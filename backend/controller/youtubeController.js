@@ -48,6 +48,13 @@ export const getVideoMetaData = async (req, res) => {
 
         const videoId = extractVideoId(youtubeUrl);
 
+        if(!videoId){
+            return res.json({
+                success: false,
+                message:'Video Id is required!! '
+            });
+        }
+
         const videoMetaData = await getYoutubeVideoDetails(videoId);
 
         if (!videoMetaData) {
@@ -57,17 +64,25 @@ export const getVideoMetaData = async (req, res) => {
             });
         }
 
-        const savedMetaData = await videoMetaDataModel.create({
-            userId: req.userId,
-            videoId: videoMetaData.videoId,
-            title: videoMetaData.title,
-            channelName: videoMetaData.channelName,
-            thumbnail: videoMetaData.thumbnail,
-            views: videoMetaData.views,
-            likes: videoMetaData.likes,
-            commentCount: videoMetaData.commentCount,
-            publishedAt: videoMetaData.publishedAt,
-        });
+        const savedMetaData = await videoMetaDataModel.findOneAndUpdate(
+            { userId: req.userId, videoId: videoMetaData.videoId },
+            {
+                userId: req.userId,
+                videoId: videoMetaData.videoId,
+                title: videoMetaData.title,
+                channelName: videoMetaData.channelName,
+                thumbnail: videoMetaData.thumbnail,
+                views: videoMetaData.views,
+                likes: videoMetaData.likes,
+                commentCount: videoMetaData.commentCount,
+                publishedAt: videoMetaData.publishedAt,
+            },
+            { 
+                new: true, 
+                upsert: true, 
+                setDefaultsOnInsert: true 
+            }
+        );
 
         return res.json({
             success: true,

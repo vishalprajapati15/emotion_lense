@@ -16,7 +16,7 @@ export const analyzeComments = async (req, res) => {
 
         const videoId = extractVideoId(youtubeUrl);
 
-        const savedMetaData = await videoMetaDataModel.findOne({ videoId, userId: req.userId }).sort({ createdAt: -1 });
+        const savedMetaData = await videoMetaDataModel.findOne({ videoId, userId: req.userId });
 
         if (!savedMetaData) {
             return res.json({
@@ -83,21 +83,43 @@ export const analyzeComments = async (req, res) => {
         const dominantSentiment = getDominantStat(sentimentStats);
         console.log("Sentiment Stats : ", sentimentStats);
 
-        //Save sentiment immediately after analyzeSentiment
-        const analysisDoc = await analysisModel.create({
-            userId: req.userId,
-            videoMetaDataId: savedMetaData._id,
-            videoId,
-            totalComments: comments.length,
-            sentimentPositiveCount: sentimentStats.POSITIVE?.count ?? 0,
-            sentimentPositivePercentage: sentimentStats.POSITIVE?.percentage ?? 0,
-            sentimentNeutralCount: sentimentStats.NEUTRAL?.count ?? 0,
-            sentimentNeutralPercentage: sentimentStats.NEUTRAL?.percentage ?? 0,
-            sentimentNegativeCount: sentimentStats.NEGATIVE?.count ?? 0,
-            sentimentNegativePercentage: sentimentStats.NEGATIVE?.percentage ?? 0,
-            dominantSentimentLabel: dominantSentiment.label,
-            dominantSentimentCount: dominantSentiment.count,
-        });
+        // Save sentiment immediately after analyzeSentiment (upsert to avoid duplicates)
+        const analysisDoc = await analysisModel.findOneAndUpdate(
+            { userId: req.userId, videoId },
+            {
+                userId: req.userId,
+                videoMetaDataId: savedMetaData._id,
+                videoId,
+                totalComments: comments.length,
+                sentimentPositiveCount: sentimentStats.POSITIVE?.count ?? 0,
+                sentimentPositivePercentage: sentimentStats.POSITIVE?.percentage ?? 0,
+                sentimentNeutralCount: sentimentStats.NEUTRAL?.count ?? 0,
+                sentimentNeutralPercentage: sentimentStats.NEUTRAL?.percentage ?? 0,
+                sentimentNegativeCount: sentimentStats.NEGATIVE?.count ?? 0,
+                sentimentNegativePercentage: sentimentStats.NEGATIVE?.percentage ?? 0,
+                dominantSentimentLabel: dominantSentiment.label,
+                dominantSentimentCount: dominantSentiment.count,
+                // reset fields that will be recomputed or regenerated
+                emotionJoyCount: 0,
+                emotionJoyPercentage: 0,
+                emotionAngerCount: 0,
+                emotionAngerPercentage: 0,
+                emotionSadnessCount: 0,
+                emotionSadnessPercentage: 0,
+                emotionFearCount: 0,
+                emotionFearPercentage: 0,
+                emotionSurpriseCount: 0,
+                emotionSurprisePercentage: 0,
+                emotionDisgustCount: 0,
+                emotionDisgustPercentage: 0,
+                dominantEmotionLabel: null,
+                dominantEmotionCount: 0,
+                topPositiveComments: [],
+                topNegativeComments: [],
+                summary: '',
+            },
+            { new: true, upsert: true, setDefaultsOnInsert: true }
+        );
 
         const emotions = await analyzeEmotion(comments);
         console.log("emotions : ", emotions);
@@ -150,8 +172,8 @@ export const analyzeComments = async (req, res) => {
             .filter(c => c.sentiment.label === 'NEGATIVE')
             .slice(0, 5);
 
-        //save with emotion immediately after analyzeEmotion
-        await analysisModel.findByIdAndUpdate(analysisDoc._id, {
+        // save with emotion immediately after analyzeEmotion
+        await analysisModel.findOneAndUpdate({ userId: req.userId, videoId }, {
             emotionJoyCount: emotionStats.joy?.count ?? 0,
             emotionJoyPercentage: emotionStats.joy?.percentage ?? 0,
             emotionAngerCount: emotionStats.anger?.count ?? 0,

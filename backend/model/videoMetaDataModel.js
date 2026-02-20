@@ -43,6 +43,8 @@ const videoMetaDataSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
+videoMetaDataSchema.index({ userId: 1, videoId: 1 }, { unique: true });
+
 const videoMetaDataModel = mongoose.models.videoMetaData || mongoose.model('videoMetaData', videoMetaDataSchema);
 
 export default videoMetaDataModel;

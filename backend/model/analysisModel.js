@@ -142,6 +142,8 @@ const analysisSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
+analysisSchema.index({ userId: 1, videoId: 1 }, { unique: true });
+
 const analysisModel = mongoose.models.analysis || mongoose.model('analysis', analysisSchema);
 
 export default analysisModel;

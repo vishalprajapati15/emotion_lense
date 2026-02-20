@@ -216,9 +216,6 @@ For each label  (e.g. POSITIVE, NEUTRAL, NEGATIVE, joy, anger, …):
 
 ---
 
-
----
-
 ### 2. Satisfaction Score
 
 Measures overall audience positivity on a scale of −100 to +100.

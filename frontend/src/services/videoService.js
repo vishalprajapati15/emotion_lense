@@ -1,7 +1,9 @@
 import { apiClient } from './apiClient'
 
-export const fetchVideoCards = async () => {
-  const { data } = await apiClient.get('/api/videos/cards')
+export const fetchVideoCards = async ({ page = 1, limit = 12 } = {}) => {
+  const { data } = await apiClient.get('/api/videos/cards', {
+    params: { page, limit }
+  })
   return data
 }
 

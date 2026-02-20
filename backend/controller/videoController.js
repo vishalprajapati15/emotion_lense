@@ -1,4 +1,5 @@
 import { getCardPreviewData, getFullVideoAndAnalysisDetails } from "../services/videoService.js";
+import analysisModel from "../model/analysisModel.js";
 
 export const fetchCardData = async (req, res) => {
     try {
@@ -10,11 +11,20 @@ export const fetchCardData = async (req, res) => {
             });
         }
 
-        const videos = await getCardPreviewData(userId);
+        const page = Math.max(Number(req.query.page) || 1, 1);
+        const limit = Math.max(Number(req.query.limit) || 12, 1);
+        const skip = (page - 1) * limit;
+
+        const [videos, total] = await Promise.all([
+            getCardPreviewData(userId, { skip, limit }),
+            analysisModel.countDocuments({ userId })
+        ]);
 
         return res.json({
             success: true,
-            totalVideos: videos.length,
+            totalVideos: total,
+            page,
+            limit,
             videos,
             message: videos.length > 0 ? 'All videos fetched successfully!!' : 'No videos found!!'
         });

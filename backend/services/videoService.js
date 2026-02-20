@@ -1,16 +1,18 @@
 import analysisModel from "../model/analysisModel.js";
 
-export const getCardPreviewData = async (userId) => {
+export const getCardPreviewData = async (userId, { skip = 0, limit = 12 } = {}) => {
     const analysis = await analysisModel
         .find({ userId })
         .populate({
             path: "videoMetaDataId",
             select: "title channelName thumbnail views likes publishedAt"
-        }).
-        select(
+        })
+        .select(
             "videoId videoMetaDataId totalComments dominantSentimentLabel dominantEmotionLabel sentimentPositivePercentage sentimentNegativePercentage"
         )
         .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
         .lean();
 
     if (!analysis || analysis.length === 0) {

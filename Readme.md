@@ -216,17 +216,10 @@ For each label  (e.g. POSITIVE, NEUTRAL, NEGATIVE, joy, anger, …):
 
 ---
 
-### 2. Dominant Sentiment / Dominant Emotion
-
-$$
-\text{Dominant} = \underset{L}{\operatorname{argmax}} \; \text{count}(L)
-$$
-
-The label whose raw comment count is the highest across all labels.
 
 ---
 
-### 3. Satisfaction Score
+### 2. Satisfaction Score
 
 Measures overall audience positivity on a scale of −100 to +100.
 
@@ -238,7 +231,7 @@ $$
 
 ---
 
-### 4. Net Sentiment Score
+### 3. Net Sentiment Score
 
 Normalised sentiment balance in the range [−1, 1].
 
@@ -250,7 +243,7 @@ $$
 
 ---
 
-### 5. Positive Ratio
+### 4. Positive Ratio
 
 Ratio of positive comments to negative comments.
 
@@ -262,7 +255,7 @@ $$
 
 ---
 
-### 6. Emotion Concentration
+### 5. Emotion Concentration
 
 How concentrated audience emotion is around the single dominant emotion.
 
@@ -274,7 +267,7 @@ $$
 
 ---
 
-### 7. Negative Risk Index
+### 6. Negative Risk Index
 
 A composite risk score combining the proportion of negative sentiment with the intensity of hostile emotions (anger + disgust).
 

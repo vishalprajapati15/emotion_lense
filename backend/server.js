@@ -7,6 +7,7 @@ import authRouter from './routes/authRoutes.js';
 import userRouter from './routes/userRoutes.js';
 import youtubeRouter from './routes/youtubeRoutes.js';
 import groqRouter from './routes/groqRoutes.js';
+import videoRouter from './routes/videoRoutes.js';
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use('/api/auth', authRouter)
 app.use('/api/user', userRouter);
 app.use('/api/youtube', youtubeRouter);
 app.use('/api/groq/', groqRouter);
+app.use('/api/videos', videoRouter);
 
 app.listen(port, ()=>{
     console.log("Server is running on port : ", port);

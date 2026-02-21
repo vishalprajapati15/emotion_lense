@@ -63,12 +63,8 @@ export const generateAnalysisSummary = async (req, res) => {
 
         const prompt = groqPromt(analysisData);
 
-        console.log("Prompt : ", prompt)
-
         const rawSummary = await generateTextFromGroq(prompt);
         const summary = formatGroqText(rawSummary);
-
-        console.log("Summary : ", summary);
 
         await analysisModel.findByIdAndUpdate(analysis._id, { summary });
 

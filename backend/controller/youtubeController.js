@@ -5,7 +5,6 @@ import analysisModel from '../model/analysisModel.js';
 export const getComments = async (req, res) => {
     try {
         const { youtubeUrl } = req.body;
-        console.log("Youtube : ", youtubeUrl)
 
         if (!youtubeUrl) {
             return res.json({
@@ -15,10 +14,8 @@ export const getComments = async (req, res) => {
         }
 
         const videoId = extractVideoId(youtubeUrl);
-        console.log("videoId : ", videoId)
 
         const comments = await getYoutubeComments(videoId);
-        console.log("comments : ", comments)
 
         return res.json({
             success: true,

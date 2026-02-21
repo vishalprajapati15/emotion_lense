@@ -2,7 +2,6 @@ import { InferenceClient } from "@huggingface/inference";
 
 const hf = new InferenceClient(process.env.HUGGING_FACE_TOKEN);
 
-// console.log("Hugging Face Hf : ",hf);
 
 export default hf;
 

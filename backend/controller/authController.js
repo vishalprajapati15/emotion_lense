@@ -163,14 +163,14 @@ export const sendResetOtp = async (req, res) => {
             success: true,
             message: 'OTP sent successfully!!'
         });
-        
+
     } catch (error) {
         res.json({ success: false, message: `Send reset OTP Error: ${error.message}` });
     }
 }
 
-export const resetPassword = async (req, res)=>{
-    const {otp, email, newPassword} = req.body;
+export const resetPassword = async (req, res) => {
+    const { otp, email, newPassword } = req.body;
     if (!otp || !email || !newPassword) {
         return res.json({
             success: false,
@@ -179,7 +179,7 @@ export const resetPassword = async (req, res)=>{
     }
 
     try {
-        const user = await userModel.findOne({email});
+        const user = await userModel.findOne({ email });
         if (!user) {
             return res.json({
                 success: false,
@@ -192,7 +192,7 @@ export const resetPassword = async (req, res)=>{
             return res.json({ success: false, message: 'Invalid OTP!!' });
         }
 
-        if(user.resetOtpExpireAt < Date.now()){
+        if (user.resetOtpExpireAt < Date.now()) {
             return res.json({ success: false, message: 'OTP is Expired!!' });
         }
 
@@ -200,11 +200,11 @@ export const resetPassword = async (req, res)=>{
 
         user.password = hashedPassword;
         user.resetOtp = '';
-        user.resetOtpExpireAt= 0;
+        user.resetOtpExpireAt = 0;
 
         await user.save();
 
-        res.json({success: true, message:'Password has been reset successfully!!'})
+        res.json({ success: true, message: 'Password has been reset successfully!!' })
     } catch (error) {
         res.json({ success: false, message: ` Reset password Error: ${error.message}` });
     }

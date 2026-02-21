@@ -42,7 +42,6 @@ export const analyzeComments = async (req, res) => {
         }
 
         const sentiments = await analyzeSentiment(comments);
-        console.log("sentiments : ", sentiments);
 
         const rawSentiment = {};
         if (Array.isArray(sentiments)) {
@@ -81,7 +80,6 @@ export const analyzeComments = async (req, res) => {
 
         const sentimentStats = statsPercentage(rawSentiment, comments.length);
         const dominantSentiment = getDominantStat(sentimentStats);
-        console.log("Sentiment Stats : ", sentimentStats);
 
         // Save sentiment immediately after analyzeSentiment (upsert to avoid duplicates)
         const analysisDoc = await analysisModel.findOneAndUpdate(
@@ -121,7 +119,6 @@ export const analyzeComments = async (req, res) => {
         );
 
         const emotions = await analyzeEmotion(comments);
-        console.log("emotions : ", emotions);
 
         const rawEmotion = {};
         if (Array.isArray(emotions)) {
@@ -137,7 +134,6 @@ export const analyzeComments = async (req, res) => {
 
         const emotionStats = statsPercentage(rawEmotion, comments.length);
         const dominantEmotion = getDominantStat(emotionStats);
-        console.log("Emotion Stats : ", emotionStats);
 
         const commentSentimentLabels = sentiments.map((result) => {
             if (Array.isArray(result)) return result[0];

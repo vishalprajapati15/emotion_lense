@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const baseURL = import.meta.env.VITE_BACKEND_URL
+const baseURL = import.meta.env.VITE_BACKEND_URL;
 
 if (!baseURL) {
   // Keep it as runtime warning; do not crash the app.
@@ -13,6 +13,19 @@ export const apiClient = axios.create({
   withCredentials: true,
   timeout: 30_000,
 })
+
+export const wakeServer = async ()=>{
+  const hasWoken = sessionStorage.getItem('serverWoken');
+  if(!hasWoken){
+    try {
+      await apiClient.get('/api/health/ping');
+      sessionStorage.setItem('serverWoken', "true");
+      console.log('Server awakened successfully!!');
+    } catch (error) {
+      console.log('Server still waking...');
+    }
+  }
+};
 
 export const getApiErrorMessage = (err) => {
   return (

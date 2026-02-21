@@ -8,6 +8,7 @@ import userRouter from './routes/userRoutes.js';
 import youtubeRouter from './routes/youtubeRoutes.js';
 import groqRouter from './routes/groqRoutes.js';
 import videoRouter from './routes/videoRoutes.js';
+import healthRouter from './routes/healthRoutes.js';
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.get('/', (req, res)=>{
     res.send("API is working...");
 });
 
+app.use('/api/health', healthRouter);
 app.use('/api/auth', authRouter)
 app.use('/api/user', userRouter);
 app.use('/api/youtube', youtubeRouter);

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Analysis from './pages/Analysis'
@@ -8,6 +8,14 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import ContactUs from './pages/ContactUs'
 import VideoDetails from './pages/VideoDetails'
+import { useAuth } from './context/Context'
+
+// Redirects authenticated users to /dashboard, guests to /home
+function RootRedirect() {
+  const { isAuthenticated, isLoading } = useAuth()
+  if (isLoading) return null  // wait for auth check — ServerWakeLoader already covers initial load
+  return isAuthenticated ? <Navigate to="/dashboard" replace /> : <Home />
+}
 
 function App() {
   return (
@@ -16,7 +24,7 @@ function App() {
         <Navbar />
         <main className="flex-grow">
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<RootRedirect />} />
             <Route path="/login" element={<Login />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/dashboard" element={<DashBoard />} />

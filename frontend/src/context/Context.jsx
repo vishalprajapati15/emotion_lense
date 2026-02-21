@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { getApiErrorMessage } from '../services/apiClient'
+import { getApiErrorMessage, wakeServer } from '../services/apiClient'
 import * as authService from '../services/authService'
+import ServerWakeLoader from '../components/ServerWakeLoader';
 
 const AuthContext = createContext(null)
 
@@ -8,6 +9,8 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+  // Skip loader for returning visitors in the same session
+  const [serverReady, setServerReady] = useState(() => !!sessionStorage.getItem('serverWoken'))
 
   const isAuthenticated = Boolean(user)
 
@@ -25,10 +28,12 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     ;(async () => {
       setIsLoading(true)
+      await wakeServer()      // wait for ping (succeeds or times out)
+      setServerReady(true)    // show the app either way
       await refreshMe()
       setIsLoading(false)
     })()
-  }, [])
+  }, []);
 
   const login = async (payload) => {
     try {
@@ -86,6 +91,8 @@ export const AuthProvider = ({ children }) => {
     }),
     [user, isAuthenticated, isLoading, error]
   )
+
+  if (!serverReady) return <ServerWakeLoader />
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

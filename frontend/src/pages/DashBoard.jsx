@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   Eye, ThumbsUp, MessageSquare, Calendar,
   TrendingUp, Sparkles, Youtube, PlusCircle,
-  LayoutGrid, Loader2, AlertCircle, Smile
+  LayoutGrid, Loader2, AlertCircle, Smile,
+  ChevronLeft, ChevronRight
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useAuth } from '../hooks/useAuth'
@@ -172,9 +173,14 @@ const DashBoard = () => {
   const navigate = useNavigate()
   const { isAuthenticated, isLoading: authLoading } = useAuth()
 
-  const [videos,  setVideos]  = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error,   setError]   = useState('')
+  const [videos,     setVideos]     = useState([])
+  const [loading,    setLoading]    = useState(true)
+  const [error,      setError]      = useState('')
+  const [page,       setPage]       = useState(1)
+  const [totalVideos, setTotalVideos] = useState(0)
+
+  const PAGE_SIZE   = 12
+  const totalPages  = Math.ceil(totalVideos / PAGE_SIZE)
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -190,12 +196,13 @@ const DashBoard = () => {
       setLoading(true)
       setError('')
       try {
-        const data = await fetchVideoCards()
+        const data = await fetchVideoCards({ page, limit: PAGE_SIZE })
         if (data?.success) {
           setVideos(data.videos ?? [])
+          setTotalVideos(data.totalVideos ?? 0)
         } else {
-          // API returned success:false — treat as empty, not a hard error
           setVideos([])
+          setTotalVideos(0)
         }
       } catch (err) {
         const msg = err?.response?.data?.message ?? err?.message ?? 'Something went wrong.'
@@ -205,7 +212,7 @@ const DashBoard = () => {
         setLoading(false)
       }
     })()
-  }, [isAuthenticated])
+  }, [isAuthenticated, page])
 
   if (authLoading) {
     return (
@@ -251,7 +258,7 @@ const DashBoard = () => {
             <p className="text-slate-400 text-sm mt-0.5">
               {loading
                 ? 'Loading your analyses…'
-                : `${videos.length} video${videos.length !== 1 ? 's' : ''} analysed`}
+                : `${totalVideos} video${totalVideos !== 1 ? 's' : ''} analysed`}
             </p>
           </div>
         </div>
@@ -280,7 +287,7 @@ const DashBoard = () => {
             className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8"
           >
             {[
-              { icon: Youtube,       label: 'Total Videos',   value: videos.length,              color: 'text-cyan-400',   bg: 'bg-cyan-400/10'   },
+              { icon: Youtube,       label: 'Total Videos',   value: totalVideos,              color: 'text-cyan-400',   bg: 'bg-cyan-400/10'   },
               { icon: TrendingUp,    label: 'Avg Positive',   value: `${avgPositive}%`,           color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
               { icon: MessageSquare, label: 'Total Comments', value: formatNumber(totalComments), color: 'text-purple-400', bg: 'bg-purple-400/10'  },
               { icon: Sparkles,      label: 'Top Emotion',    value: topEmotion,                  color: 'text-yellow-400', bg: 'bg-yellow-400/10'  },
@@ -357,13 +364,69 @@ const DashBoard = () => {
 
       {/* ── Video cards grid ── */}
       {!loading && !error && videos.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          <AnimatePresence>
-            {videos.map((video, i) => (
-              <VideoCard key={video.videoId ?? i} video={video} index={i} />
-            ))}
-          </AnimatePresence>
-        </div>
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <AnimatePresence>
+              {videos.map((video, i) => (
+                <VideoCard key={video.videoId ?? i} video={video} index={i} />
+              ))}
+            </AnimatePresence>
+          </div>
+
+          {/* ── Pagination ── */}
+          {totalPages > 1 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="flex items-center justify-center gap-3 mt-10"
+            >
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                disabled={page === 1}
+                onClick={() => { setPage((p) => p - 1); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium
+                  border border-slate-700 bg-slate-800/60 text-slate-300
+                  hover:border-cyan-500/50 hover:text-cyan-400 transition-all duration-200
+                  disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-slate-700 disabled:hover:text-slate-300"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Prev
+              </motion.button>
+
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }).map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => { setPage(i + 1); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                    className={`w-8 h-8 rounded-lg text-sm font-semibold transition-all duration-200
+                      ${ page === i + 1
+                        ? 'bg-cyan-500 text-white shadow-md shadow-cyan-500/30'
+                        : 'bg-slate-800/60 border border-slate-700 text-slate-400 hover:border-cyan-500/40 hover:text-cyan-400'
+                      }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </div>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                disabled={page === totalPages}
+                onClick={() => { setPage((p) => p + 1); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium
+                  border border-slate-700 bg-slate-800/60 text-slate-300
+                  hover:border-cyan-500/50 hover:text-cyan-400 transition-all duration-200
+                  disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-slate-700 disabled:hover:text-slate-300"
+              >
+                Next
+                <ChevronRight className="w-4 h-4" />
+              </motion.button>
+            </motion.div>
+          )}
+        </>
       )}
     </div>
   )
